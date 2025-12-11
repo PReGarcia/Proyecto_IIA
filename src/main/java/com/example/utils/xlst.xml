@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     
-    <xsl:output method="xml" indent="yes"/>
-
-    <xsl:template match="@*|node()">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-        </xsl:copy>
-    </xsl:template>
+    <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
 
     <xsl:template match="drink">
-        <xsl:copy>
-            <xsl:apply-templates select="@*|node()"/>
-            
-            <estado>Preparado</estado>
-            <barman>Robot_v1</barman>
-            <fecha_prueba>2023-12-01</fecha_prueba>
-        </xsl:copy>
+        <sql>
+            <xsl:text>SELECT * FROM </xsl:text>
+            <xsl:value-of select="type"/>
+            <xsl:text> WHERE nombre = '</xsl:text>
+            <xsl:value-of select="name"/>
+            <xsl:text>'</xsl:text>
+        </sql>
     </xsl:template>
 
 </xsl:stylesheet>

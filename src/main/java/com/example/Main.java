@@ -21,7 +21,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String xlst = "com/example/utils/xlst.xml";
+        String xlst = "src/main/java/com/example/utils/xlst.xml";
         List<String> xpathdist = List.of(
             "/drink[type='hot']",
             "/drink[type='cold']"
@@ -95,7 +95,7 @@ public class Main {
         Task aggregatorTask = aggregatorFactory.createTask("/cafe_order/drinks", slotMergerAdd, slotAddOut);
 
         System.out.println("Iniciando procesamiento de la orden...");
-        inputPort.leerArchivo(Path.of("com/comandas/order1.xml").toAbsolutePath().toString());
+        inputPort.leerArchivo(Path.of("src/main/java/com/comandas/order1.xml").toAbsolutePath().toString());
         splitTask.execute();
         distTask.execute();
         repHotTask.execute();
@@ -110,7 +110,7 @@ public class Main {
         enricherTask2.execute();
         mergerTask.execute();
         aggregatorTask.execute();
-        outputPort.escribirArchivo("com/output/order.xml");
+        outputPort.escribirArchivo("src/main/java/com/output/order.xml");
         System.out.println("Procesamiento completado. Archivo de salida generado en com/output/order.xml");
     } 
 }
