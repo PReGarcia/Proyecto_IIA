@@ -11,7 +11,6 @@ import com.example.utils.Arbol;
 import com.example.utils.Message;
 import com.example.utils.XmlUtils;
 
-//colgar correlator id en el nodo
 public class Splitter implements Task {
 
     private String expresionXpath;

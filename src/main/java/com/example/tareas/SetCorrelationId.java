@@ -1,7 +1,42 @@
 package com.example.tareas;
 
-//Si no configuras con xpath al usar correlationid crea un id 
-//Crea un id aleatorio y lo setea en el splitter
-public class SetCorrelationId {
-    
+import java.util.UUID;
+
+import org.w3c.dom.DOMException;
+
+import com.example.pipeline.Slot;
+import com.example.utils.Message;
+import com.example.utils.XmlUtils;
+
+public class SetCorrelationId implements Task {
+    private Slot entrada, salida;
+    private String xpath;
+
+    public SetCorrelationId(Slot entrada, Slot salida) {
+        this(null, entrada, salida); 
+    }
+
+    public SetCorrelationId(String xpath, Slot entrada, Slot salida) {
+        this.xpath = xpath;
+    }
+
+    @Override
+    public void execute() throws Exception {
+        while (!entrada.esVacia()) {
+            setId(entrada.recibirMensaje());
+        }
+    }
+
+    public void setId(Message mensaje) throws DOMException, Exception {
+        String correlationId;
+
+        if (this.xpath != null && !this.xpath.isEmpty()) {
+            correlationId = XmlUtils.NodeSearch(mensaje.getCuerpo(), xpath).getTextContent();
+        } else {
+            correlationId = UUID.randomUUID().toString();
+        }
+
+        mensaje.setCorrelationId(correlationId);
+        salida.enviarMensaje(mensaje);
+    }
 }

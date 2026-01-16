@@ -13,15 +13,14 @@ import org.w3c.dom.Document;
 import com.example.pipeline.Slot;
 import com.example.utils.Message;
 
-public class Translator implements Task {
+public class Translator extends BaseTask {
 
     private String rutaXslt;
-    private Slot entrada;
     private Slot salida;
 
     public Translator(String rutaXslt, Slot entrada, Slot salida) {
+        super(entrada);
         this.rutaXslt = rutaXslt;
-        this.entrada = entrada;
         this.salida = salida;
     }
 
@@ -32,7 +31,8 @@ public class Translator implements Task {
         }
     }
 
-    public void translate(Message mensajeEntrada) throws Exception {
+    @Override
+    public void procesarMensaje(Message mensajeEntrada) throws Exception {
         Document xmlOriginal = mensajeEntrada.getCuerpo();
 
         File archivoXslt = new File(rutaXslt);

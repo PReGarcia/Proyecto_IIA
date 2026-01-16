@@ -24,6 +24,7 @@ public class Message {
     public Message(String cid, Document c){
         messageId = UUID.randomUUID().toString();
         sequenceId = null;
+        correlationId = null;
         tamSecuencia = 0;
         ordenSecuencia = 0;
         cuerpo = c;
