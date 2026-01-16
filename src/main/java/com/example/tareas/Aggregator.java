@@ -28,7 +28,6 @@ public class Aggregator implements Task {
         this.salida = salida;
     }
 
-
     @Override
     public void execute() throws Exception {
         while(!entrada.esVacia()) {

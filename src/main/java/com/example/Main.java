@@ -3,6 +3,8 @@ package com.example;
 import java.nio.file.Path;
 import java.util.List;
 
+import com.example.conectores.Barman;
+import com.example.conectores.Conector;
 import com.example.factory.AggregatorFactory;
 import com.example.factory.ContentEnricherFactory;
 import com.example.factory.CorrelatorFactory;
@@ -20,6 +22,8 @@ import com.example.tareas.Task;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+
+        Conector barman = new Barman("src/main/resources/db/cafeteria.db");
 
         String xlst = "src/main/java/com/example/utils/xlst.xml";
         List<String> xpathdist = List.of(
@@ -69,8 +73,8 @@ public class Main {
  
         InputPort inputPort = new InputPort(slotInSplit);
         OutputPort outputPort = new OutputPort(slotAddOut);
-        RequestPort requestPort1 = new RequestPort(slotTradReq1, slotRequestCor1);
-        RequestPort requestPort2 = new RequestPort(slotTradReq2, slotRequestCor2);
+        RequestPort requestPort1 = new RequestPort(slotTradReq1, slotRequestCor1, barman);
+        RequestPort requestPort2 = new RequestPort(slotTradReq2, slotRequestCor2, barman);
 
         SplitterFactory splitterFactory = new SplitterFactory();
         DistributorFactory distributorFactory = new DistributorFactory();
