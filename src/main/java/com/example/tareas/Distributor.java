@@ -11,26 +11,19 @@ import com.example.pipeline.Slot;
 import com.example.utils.Message;
 import com.example.utils.XmlUtils;
 
-public class Distributor implements Task {
+public class Distributor extends BaseTask {
 
     private Map<String, Slot> salidas;
-    private Slot entrada;
 
     public Distributor(List<String> xpath, Slot entrada,List<Slot> salidas) {
+        super(entrada);
         this.salidas =  new LinkedHashMap<>();
-        this.entrada = entrada;
         for (int i = 0; i < xpath.size(); i++) {
             this.salidas.put(xpath.get(i), salidas.get(i));
         }
     }
-
     @Override
-    public void execute() throws Exception {
-        while(!entrada.esVacia()) {
-            distribute(entrada.recibirMensaje());
-        }
-    }
-    public void distribute(Message mensajeEntrada) throws Exception {
+    public void procesarMensaje(Message mensajeEntrada) throws Exception {
         Document documento = mensajeEntrada.getCuerpo();
 
         for (Map.Entry<String, Slot> regla : salidas.entrySet()) {

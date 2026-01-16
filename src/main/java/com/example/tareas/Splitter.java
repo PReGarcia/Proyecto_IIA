@@ -11,37 +11,21 @@ import com.example.utils.Arbol;
 import com.example.utils.Message;
 import com.example.utils.XmlUtils;
 
-public class Splitter implements Task {
+public class Splitter extends BaseTask {
 
     private String expresionXpath;
-    private Slot entrada;
     private Slot salida;
     private static Arbol arbolInstancia;
 
-    public Splitter(String expresionXpath, String idGrupo, Slot entrada, Slot salida) {
-        this.expresionXpath = expresionXpath;
-        this.entrada = entrada;
-        this.salida = salida;
-        arbolInstancia = Arbol.getInstancia();
-    }
-
     public Splitter(String expresionXpath, Slot entrada, Slot salida) {
+        super(entrada);
         this.expresionXpath = expresionXpath;
-        this.entrada = entrada;
         this.salida = salida;
         arbolInstancia = Arbol.getInstancia();
     }
-
-
 
     @Override
-    public void execute() throws Exception {
-        while(!entrada.esVacia()){
-            split(entrada.recibirMensaje());
-        }
-    }
-    
-    public void split(Message mensaje) throws Exception {
+    public void procesarMensaje(Message mensaje) throws Exception {
         Message recibido = mensaje;
         Document doc = mensaje.getCuerpo();
 
@@ -65,7 +49,6 @@ public class Splitter implements Task {
             nuevoMensaje.setOrdenSecuencia(contador);
             contador++; 
 
-            nuevoMensaje.setCorrelationId(UUID.randomUUID().toString());
             salida.enviarMensaje(nuevoMensaje);
         }
     }

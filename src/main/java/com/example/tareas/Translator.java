@@ -24,12 +24,6 @@ public class Translator extends BaseTask {
         this.salida = salida;
     }
 
-    @Override
-    public void execute() throws Exception {     
-        while(!entrada.esVacia()){
-            translate(entrada.recibirMensaje());
-        }
-    }
 
     @Override
     public void procesarMensaje(Message mensajeEntrada) throws Exception {

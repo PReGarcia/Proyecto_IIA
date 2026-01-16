@@ -8,8 +8,8 @@ import com.example.pipeline.Slot;
 import com.example.utils.Message;
 import com.example.utils.XmlUtils;
 
-public class SetCorrelationId implements Task {
-    private Slot entrada, salida;
+public class SetCorrelationId extends BaseTask {
+    private Slot salida;
     private String xpath;
 
     public SetCorrelationId(Slot entrada, Slot salida) {
@@ -17,17 +17,12 @@ public class SetCorrelationId implements Task {
     }
 
     public SetCorrelationId(String xpath, Slot entrada, Slot salida) {
+        super(entrada);
         this.xpath = xpath;
     }
 
     @Override
-    public void execute() throws Exception {
-        while (!entrada.esVacia()) {
-            setId(entrada.recibirMensaje());
-        }
-    }
-
-    public void setId(Message mensaje) throws DOMException, Exception {
+    public void procesarMensaje(Message mensaje) throws DOMException, Exception {
         String correlationId;
 
         if (this.xpath != null && !this.xpath.isEmpty()) {
