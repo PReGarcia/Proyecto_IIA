@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.example.pipeline.Slot;
 import com.example.utils.Message;
 
-//Hay que hacerlo mas generico esta hecho muy pensado para cafe??
 public class Correlator implements Task {
 
     private final Map<String, Message> pendientes = new ConcurrentHashMap<>();

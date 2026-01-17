@@ -19,6 +19,7 @@ public class SetCorrelationId extends BaseTask {
     public SetCorrelationId(String xpath, Slot entrada, Slot salida) {
         super(entrada);
         this.xpath = xpath;
+        this.salida = salida;
     }
 
     @Override

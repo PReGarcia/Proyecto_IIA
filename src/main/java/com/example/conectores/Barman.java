@@ -15,7 +15,6 @@ import org.w3c.dom.Element;
 import com.example.utils.Message;
 import com.example.utils.XmlUtils;
 
-//crear un nodo con los elementos obtenidos de la bd
 public class Barman implements Conector{
     private String url;
 

@@ -5,19 +5,20 @@ import java.util.List;
 
 import com.example.conectores.Barman;
 import com.example.conectores.Conector;
-import com.example.factory.AggregatorFactory;
-import com.example.factory.ContentEnricherFactory;
-import com.example.factory.CorrelatorFactory;
-import com.example.factory.DistributorFactory;
-import com.example.factory.MergerFactory;
-import com.example.factory.ReplicatorFactory;
-import com.example.factory.SplitterFactory;
-import com.example.factory.TranslatorFactory;
 import com.example.pipeline.InputPort;
 import com.example.pipeline.OutputPort;
 import com.example.pipeline.RequestPort;
 import com.example.pipeline.Slot;
+import com.example.tareas.Aggregator;
+import com.example.tareas.ContentEnricher;
+import com.example.tareas.Correlator;
+import com.example.tareas.Distributor;
+import com.example.tareas.Merger;
+import com.example.tareas.Replicator;
+import com.example.tareas.SetCorrelationId;
+import com.example.tareas.Splitter;
 import com.example.tareas.Task;
+import com.example.tareas.Translator;
 
 public class Main {
 
@@ -34,6 +35,9 @@ public class Main {
         Slot slotDistRepHot = new Slot();
         Slot slotDistRepCold = new Slot();
 
+        Slot slotSplitterId = new Slot();
+        Slot slotIdDist = new Slot();
+
         List<Slot> slotsDist = List.of(
             slotDistRepHot,
             slotDistRepCold
@@ -42,8 +46,6 @@ public class Main {
         Slot slotInSplit = new Slot();
 
         Slot slotAddOut = new Slot();
-        
-        Slot slotSplitDist = new Slot();
         
         Slot slotRepCor1 = new Slot();
         Slot slotRepCor2 = new Slot();
@@ -76,31 +78,24 @@ public class Main {
         RequestPort requestPort1 = new RequestPort(slotTradReq1, slotRequestCor1, barman);
         RequestPort requestPort2 = new RequestPort(slotTradReq2, slotRequestCor2, barman);
 
-        SplitterFactory splitterFactory = new SplitterFactory();
-        DistributorFactory distributorFactory = new DistributorFactory();
-        ReplicatorFactory replicatorFactory = new ReplicatorFactory();
-        CorrelatorFactory correlatorFactory = new CorrelatorFactory();
-        TranslatorFactory traductorFactory = new TranslatorFactory();
-        ContentEnricherFactory contentEnricherFactory = new ContentEnricherFactory();
-        MergerFactory mergerFactory = new MergerFactory();
-        AggregatorFactory aggregatorFactory = new AggregatorFactory();
-        
-        Task splitTask = splitterFactory.createTask("/cafe_order/drinks/drink", slotInSplit, slotSplitDist);
-        Task distTask = distributorFactory.createTask(xpathdist, slotSplitDist, slotsDist);
-        Task repHotTask = replicatorFactory.createTask(slotDistRepHot, arrayRepHot);
-        Task repColdTask = replicatorFactory.createTask(slotDistRepCold, arrayRepCold);
-        Task tradTask1 = traductorFactory.createTask(xlst, slotRepTrad1, slotTradReq1);
-        Task corTask1 = correlatorFactory.createTask(new Slot[]{slotRepCor1, slotRequestCor1}, new Slot[]{slotCorEnricherPend1, slotCorEnricherRes1});
-        Task tradTask2 = traductorFactory.createTask(xlst, slotRepTrad2, slotTradReq2);
-        Task corTask2 = correlatorFactory.createTask(new Slot[]{slotRepCor2, slotRequestCor2}, new Slot[]{slotCorEnricherPend2, slotCorEnricherRes2});
-        Task enricherTask1 = contentEnricherFactory.createTask(new String [] {"/drink", ""}, slotEnricherMerger1, new Slot[]{slotCorEnricherPend1, slotCorEnricherRes1});
-        Task enricherTask2 = contentEnricherFactory.createTask(new String [] {"/drink", ""}, slotEnricherMerger2, new Slot[]{slotCorEnricherPend2, slotCorEnricherRes2});
-        Task mergerTask = mergerFactory.createTask(new Slot[]{slotEnricherMerger1, slotEnricherMerger2}, slotMergerAdd);
-        Task aggregatorTask = aggregatorFactory.createTask("/cafe_order/drinks", slotMergerAdd, slotAddOut);
+        Task splitTask = new Splitter("/cafe_order/drinks/drink", slotInSplit, slotSplitterId);
+        Task setIdTask = new SetCorrelationId(slotSplitterId,slotIdDist );
+        Task distTask = new Distributor(xpathdist, slotIdDist, slotsDist);
+        Task repHotTask = new Replicator(slotDistRepHot, arrayRepHot);
+        Task repColdTask = new Replicator(slotDistRepCold, arrayRepCold);
+        Task tradTask1 = new Translator(xlst, slotRepTrad1, slotTradReq1);
+        Task corTask1 = new Correlator(new Slot[]{slotRepCor1, slotRequestCor1}, new Slot[]{slotCorEnricherPend1, slotCorEnricherRes1});
+        Task tradTask2 = new Translator(xlst, slotRepTrad2, slotTradReq2);
+        Task corTask2 = new Correlator(new Slot[]{slotRepCor2, slotRequestCor2}, new Slot[]{slotCorEnricherPend2, slotCorEnricherRes2});
+        Task enricherTask1 = new ContentEnricher(new String [] {"/drink", ""}, slotEnricherMerger1, new Slot[]{slotCorEnricherPend1, slotCorEnricherRes1});
+        Task enricherTask2 = new ContentEnricher(new String [] {"/drink", ""}, slotEnricherMerger2, new Slot[]{slotCorEnricherPend2, slotCorEnricherRes2});
+        Task mergerTask = new Merger(new Slot[]{slotEnricherMerger1, slotEnricherMerger2}, slotMergerAdd);
+        Task aggregatorTask = new Aggregator("/cafe_order/drinks", slotMergerAdd, slotAddOut);
 
         System.out.println("Iniciando procesamiento de la orden...");
         inputPort.leerArchivo(Path.of("src/main/java/com/comandas/order1.xml").toAbsolutePath().toString());
         splitTask.execute();
+        setIdTask.execute();
         distTask.execute();
         repHotTask.execute();
         repColdTask.execute();
